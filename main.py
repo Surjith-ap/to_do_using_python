@@ -7,7 +7,7 @@ def loadTasks():
         with open(fileName, "r") as file:
             return json.load(file)
     except:
-        return[]
+        return {"tasks": []}
 def saveTasks(tasks):
     try:
         with open(fileName, "w") as file:
@@ -17,23 +17,34 @@ def saveTasks(tasks):
     
 def viewTasks(tasks):
     task_list = tasks["tasks"]
-    if len(tasks["tasks"]) == 0:
+    if len(task_list) == 0:
         print("No Tasks")
     else :
         print("Your To-Do List")
         for idx, task in enumerate(task_list):
             status = "[completed]" if task["complete"] else "[pending]"
-            print(f"{idx + 2}. {task['desc']} | {status}")
+            print(f"{idx + 1}. {task['desc']} | {status}")
 def createTasks(tasks):
     desc = input("Enter the task Desciption").strip()
     if desc:
-        tasks["tasks"].append({"desciption": desc, "complete": False})
+        tasks["tasks"].append({"desc": desc, "complete": False})
         saveTasks(tasks)
         print("Task Added")
     else:
         print("Desciption cannot be Empty.")
-def completeTasks():
-    pass
+def completeTasks(tasks):
+    viewTasks(tasks)
+    try:
+        task_num = int(input("Enter the task number").strip())
+        if 1 <= task_num <= len(tasks["tasks"]):
+            tasks["tasks"][task_num-1]["complete"] = True
+            saveTasks(tasks)
+            print("Task marked as complete")
+        else:
+            print("Invalid task Number")
+    except:
+        print("Enter a Valid number")
+
 
 def main():
     tasks = loadTasks()
@@ -50,9 +61,9 @@ def main():
         if ch == "1":
             viewTasks(tasks)
         elif ch == "2":
-            createTasks()
+            createTasks(tasks)
         elif ch == "3":
-            completeTasks()
+            completeTasks(tasks)
         elif ch == "4":
             break
         else:
